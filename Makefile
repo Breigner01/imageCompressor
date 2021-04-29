@@ -5,23 +5,20 @@
 ## Makefile
 ##
 
-RM	?=	rm -rf
+RM			?=	rm -rf
 
-stack	=	stack
-
-NAME	=	imageCompressor
-
-HFLAGS	=	--system-ghc
+HFLAGS		=	--system-ghc
 
 BINARY_FLAG	=	--local-bin-path .
 
+NAME		=	imageCompressor
+
 all:
-	@stack build $(HFLAGS)
-	@stack install $(BINARY_FLAG) $(HFLAGS)
-	@mv $(NAME)-exe $(NAME)
+	stack $(HFLAGS) build
+	stack $(HFLAGS) $(BINARY_FLAG) install
 
 clean:
-	@stack clean
+	stack clean
 
 fclean:	clean
 	$(RM) $(NAME)
