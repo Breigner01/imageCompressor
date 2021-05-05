@@ -4,25 +4,10 @@ module Parsing
     ) where
 
 import Text.Read
-import GHC.IO.Handle.Text
-import GHC.IO.Handle.Types
-import GHC.IO.Handle
 import System.Directory
+import StringOperations
+import ReadOperations
 import DataTypes
-
-readPositiveInt :: String -> Maybe Int
-readPositiveInt str = case readMaybe str of
-        Just nb ->  if nb >= 0
-                    then Just nb
-                    else Nothing
-        Nothing -> Nothing
-
-readColor :: String -> Maybe Int
-readColor str = case readMaybe str of
-        Just nb ->  if nb >= 0 && nb < 256
-                    then Just nb
-                    else Nothing
-        Nothing -> Nothing
 
 parseArgs :: [String] -> IO (Maybe Input)
 parseArgs [colors, convergence, file] = case readPositiveInt colors of
@@ -35,23 +20,6 @@ parseArgs [colors, convergence, file] = case readPositiveInt colors of
             Nothing -> return Nothing
         Nothing -> return Nothing
 parseArgs _ = return Nothing
-
-charInString :: Char -> String -> Bool
-charInString c (s:str)  | c == s = True
-                        | otherwise = charInString c str
-charInString c _ = False
-
-stringToken :: String -> String -> String
-stringToken (s:str) delim   | charInString s delim = []
-                            | otherwise = s : stringToken str delim
-stringToken [] _ = []
-
-stringToArray :: String -> String -> [String]
-stringToArray (s:str) delim | not (charInString s delim) = stringToArray str delim
-                            | otherwise = case stringToken str delim of
-                                "" -> stringToArray str delim
-                                string -> string : stringToArray str delim
-stringToArray [] _ = []
 
 retrieveColors :: Int -> Int -> [String] -> Maybe Pixel
 retrieveColors x y (rs:gs:bs:s) =

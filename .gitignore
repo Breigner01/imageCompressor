@@ -1,5 +1,9 @@
+
 .stack-work/
 *~
 *.cabal
 *.yaml.lock
+
 imageCompressor
+
+input
