@@ -4,22 +4,25 @@ module Parsing
     ) where
 
 import Text.Read
-import System.Directory
+import GHC.Float
 import StringOperations
 import ReadOperations
 import DataTypes
 
-parseArgs :: [String] -> IO (Maybe Input)
-parseArgs [colors, convergence, file] = case readPositiveInt colors of
-        Just colorsNb -> case readMaybe convergence :: Maybe Float of
-            Just convergenceNb -> do
-                fileExistence <- doesFileExist file
-                if fileExistence then return (Just Input{colorsNumber=colorsNb,
-                    convergenceLimit = convergenceNb, file = file})
-                else return Nothing
-            Nothing -> return Nothing
-        Nothing -> return Nothing
-parseArgs _ = return Nothing
+defaultInput :: Config
+defaultInput = Config {colorsNumber = -1, convergenceLimit = -1, file = ""}
+
+parseArgs :: [String] -> Maybe Config
+parseArgs [] = Just defaultInput
+parseArgs ("-n":x:xs) = case readColor x of
+    Just nb -> fmap (\config -> config {colorsNumber = nb}) (parseArgs xs)
+    Nothing -> Nothing
+parseArgs ("-l":x:xs) = case readPositiveFloat x of
+    Just nb -> fmap (\config -> config {convergenceLimit = nb}) (parseArgs xs)
+    Nothing -> Nothing
+parseArgs ("-f":x:xs) = fmap (\config -> config {file = x}) (parseArgs xs)
+parseArgs (x:xs) = Nothing
+
 
 retrieveColors :: Int -> Int -> [String] -> Maybe Pixel
 retrieveColors x y (rs:gs:bs:s) =
@@ -27,11 +30,11 @@ retrieveColors x y (rs:gs:bs:s) =
         Just r -> case readColor gs of
             Just g -> case readColor bs of
                 Just b -> Just Pixel {point = Point {x = x, y = y},
-                                      color = Color {r = r, g = g, b = b}}
+                    color = Color {r = int2Float r, g = int2Float g,
+                        b = int2Float b}}
                 Nothing -> Nothing
             Nothing -> Nothing
         Nothing -> Nothing
-
 
 retrieveStringContent :: String -> Maybe Pixel
 retrieveStringContent str =

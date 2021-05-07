@@ -1,11 +1,12 @@
 module DataTypes
-    ( Input(..)
+    ( Config(..)
     , Point(..)
     , Color(..)
     , Pixel(..)
+    , Cluster(..)
     ) where
 
-data Input = Input {
+data Config = Config {
     colorsNumber :: Int,
     convergenceLimit :: Float,
     file :: String
@@ -17,12 +18,17 @@ data Point = Point {
 } deriving (Show)
 
 data Color = Color {
-    r :: Int,
-    g :: Int,
-    b :: Int
+    r :: Float,
+    g :: Float,
+    b :: Float
 } deriving (Show)
 
 data Pixel = Pixel {
     point :: Point,
     color :: Color
+} deriving (Show)
+
+data Cluster = Cluster {
+    centroid :: Color,
+    pixelArray :: [Pixel]
 } deriving (Show)
