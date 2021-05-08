@@ -1,9 +1,12 @@
-module KMeansAlgorithm where
+module KMeansAlgorithm
+    ( kMeansAlgorithm
+    ) where
 
 import GHC.Float
 import System.Random
 import DataTypes
 import DataComparison
+import Printing
 
 generateClusterArray :: Int -> IO [Cluster]
 generateClusterArray 0 = return []
@@ -32,7 +35,7 @@ pixelToCluster :: Pixel -> Int -> Int -> Float -> [Cluster] -> Int
 pixelToCluster _ _ is _ [] = is
 pixelToCluster px@(Pixel pt c1) i is d (cl@(Cluster c2 pxArr):clArr) =
     if nd < d
-    then pixelToCluster px (i + 1) (i + 1) nd clArr
+    then pixelToCluster px (i + 1) i nd clArr
     else pixelToCluster px (i + 1) is d clArr
     where
         nd = computeDistance c1 c2
@@ -48,6 +51,7 @@ colorSum (px@(Pixel _ c@(Color r1 g1 b1)):pxArr) cs@(Color r2 g2 b2) =
     colorSum pxArr cs {r = r1 + r2, g = g1 + g2, b = b1 + b2}
 
 computeCentroid :: [Pixel] -> Color
+computeCentroid [] = Color {r = 0, g = 0, b = 0}
 computeCentroid pxArr =
     Color {r = r / len, g = g / len, b = b / len}
     where
@@ -57,12 +61,44 @@ computeCentroid pxArr =
 computeAllCentroids :: [Cluster] -> [Cluster]
 computeAllCentroids [] = []
 computeAllCentroids (cl@(Cluster _ px):clArr) =
-    cl {centroid = computeCentroid px} : computeAllCentroids clArr
+    case computeCentroid px of
+        c@(Color 0 0 0) -> cl : computeAllCentroids clArr
+        c -> cl {centroid = computeCentroid px} : computeAllCentroids clArr
 
-algorithm :: [Cluster] -> [Pixel] -> [Cluster]
-algorithm clArr (px:pxArr) = undefined
+computeClusters :: [Cluster] -> [Pixel] -> [Cluster]
+computeClusters clArr [] = computeAllCentroids clArr
+computeClusters clArr (px:pxArr) = computeClusters clArray pxArr
+    where
+        idx = pixelToCluster px 0 0 442 clArr
+        clArray = emplacePixel px idx clArr
+
+checkConvergence :: [Cluster] -> [Cluster] -> Float -> [Cluster]
+checkConvergence [] [] _ = []
+checkConvergence [] _ _ = []
+checkConvergence _ [] _ = []
+checkConvergence (cl1@(Cluster c1 _):clArr1) (cl2@(Cluster c2 _):clArr2) conv =
+    if computeDistance c1 c2 <= conv
+    then cl2 {centroid = c1} : checkConvergence clArr1 clArr2 conv
+    else cl2 : checkConvergence clArr1 clArr2 conv
+
+determineCluster :: [Cluster] -> [Pixel] -> Float -> Maybe [Cluster]
+determineCluster clArr pxArr convergence =
+    if clusterArrayEq clArr newClArr
+    then Nothing
+    else Just newClArr
+    where
+        nClArr = computeClusters (newClusterArray clArr) pxArr
+        newClArr = checkConvergence clArr nClArr convergence
+
+algorithm :: Config -> [Pixel] -> [Cluster] -> [Cluster]
+algorithm conf@(Config _ c _) pxArr clArr =
+    case determineCluster clArr pxArr c of
+        Just newClArr -> algorithm conf pxArr newClArr
+        Nothing -> clArr
 
 kMeansAlgorithm :: Config -> [Pixel] -> IO ()
-kMeansAlgorithm input pixelArray = do
-    clusterArray <- generateClusterArray (colorsNumber input)
+kMeansAlgorithm conf pixelArray = do
+    clusterArray <- generateClusterArray (colorsNumber conf)
+    print clusterArray
+    printClusterArray (algorithm conf pixelArray clusterArray)
     return ()

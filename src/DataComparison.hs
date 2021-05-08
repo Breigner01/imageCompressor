@@ -25,6 +25,9 @@ clusterEq   cl1@(Cluster ce1@(Color r1 g1 b1) p1)
     | otherwise = False
 
 clusterArrayEq :: [Cluster] -> [Cluster] -> Bool
+clusterArrayEq [] [] = True
+clusterArrayEq _ [] = False
+clusterArrayEq [] _ = False
 clusterArrayEq (c1:ca1) (c2:ca2) =  if clusterEq c1 c2
                                     then clusterArrayEq ca1 ca2
                                     else False

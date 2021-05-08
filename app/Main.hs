@@ -5,6 +5,7 @@ import System.Exit
 import System.IO
 import DataTypes
 import Parsing
+import KMeansAlgorithm
 
 help :: IO ()
 help =  putStrLn "USAGE: ./imageCompressor -n N -l L -f F\n" >>
@@ -16,9 +17,9 @@ main :: IO ()
 main = do
     args <- getArgs
     case parseArgs args of
-        Just config -> do
-            content <- readFile (file config)
+        Just conf -> do
+            content <- readFile (file conf)
             case parseFile (lines content) of
-                Just pixelArray -> print pixelArray >> exitWith ExitSuccess
+                Just pxArr -> kMeansAlgorithm conf pxArr >> exitWith ExitSuccess
                 Nothing -> putStrLn "Invalid File" >> exitWith (ExitFailure 84)
         Nothing -> help >> exitWith (ExitFailure 84)
