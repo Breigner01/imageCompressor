@@ -4,19 +4,21 @@ module KMeansAlgorithm
 
 import GHC.Float
 import System.Random
+import RandomLimits
 import DataTypes
 import DataComparison
 import Printing
 
-generateClusterArray :: Int -> IO [Cluster]
-generateClusterArray 0 = return []
-generateClusterArray nb = do
-    r <- randomRIO (0, 255)
-    g <- randomRIO (0, 255)
-    b <- randomRIO (0, 255)
-    clusterArray <- generateClusterArray (nb - 1)
-    return (Cluster {centroid = Color {r = int2Float r, g = int2Float g,
-        b = int2Float b}, pixelArray = []} : clusterArray)
+generateClusterArray :: Int -> (Color, Color) -> IO [Cluster]
+generateClusterArray 0 _ = return []
+generateClusterArray nb (cMin@(Color rMin gMin bMin),
+    cMax@(Color rMax gMax bMax)) = do
+        r <- randomRIO (rMin, rMax)
+        g <- randomRIO (gMin, gMax)
+        b <- randomRIO (bMin, bMax)
+        clusterArray <- generateClusterArray (nb - 1) (cMin, cMax)
+        return (Cluster {centroid = Color {r = r, g = g, b = b},
+        pixelArray = []} : clusterArray)
 
 newClusterArray :: [Cluster] -> [Cluster]
 newClusterArray [] = []
@@ -98,7 +100,8 @@ algorithm conf@(Config _ c _) pxArr clArr =
 
 kMeansAlgorithm :: Config -> [Pixel] -> IO ()
 kMeansAlgorithm conf pixelArray = do
-    clusterArray <- generateClusterArray (colorsNumber conf)
+    clusterArray <- generateClusterArray (colorsNumber conf) colorsLimits
     print clusterArray
     printClusterArray (algorithm conf pixelArray clusterArray)
-    return ()
+    where
+        colorsLimits = randomLimits pixelArray
