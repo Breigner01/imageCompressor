@@ -13,8 +13,9 @@ stringToken (s:str) delim   | charInString s delim = []
 stringToken [] _ = []
 
 stringToArray :: String -> String -> [String]
-stringToArray (s:str) delim | not (charInString s delim) = stringToArray str delim
-                            | otherwise = case stringToken str delim of
-                                "" -> stringToArray str delim
-                                string -> string : stringToArray str delim
+stringToArray (s:str) delim
+    | not (charInString s delim) = stringToArray str delim
+    | otherwise = case stringToken str delim of
+        "" -> stringToArray str delim
+        string -> string : stringToArray str delim
 stringToArray [] _ = []
