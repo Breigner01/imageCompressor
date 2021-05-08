@@ -18,6 +18,7 @@ main = do
     args <- getArgs
     case parseArgs args of
         Just conf -> do
+            checkArgs conf
             content <- readFile (file conf)
             case parseFile (lines content) of
                 Just pxArr -> kMeansAlgorithm conf pxArr >> exitWith ExitSuccess

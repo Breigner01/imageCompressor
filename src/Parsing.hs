@@ -1,9 +1,11 @@
 module Parsing
     ( parseArgs
+    , checkArgs
     , parseFile
     ) where
 
 import Text.Read
+import System.Exit
 import GHC.Float
 import StringOperations
 import ReadOperations
@@ -22,6 +24,12 @@ parseArgs ("-l":x:xs) = case readPositiveFloat x of
     Nothing -> Nothing
 parseArgs ("-f":x:xs) = fmap (\config -> config {file = x}) (parseArgs xs)
 parseArgs (x:xs) = Nothing
+
+checkArgs :: Config -> IO ()
+checkArgs conf@(Config cNb convLimit f) =
+    if cNb == -1 || convLimit == -1 || f == ""
+    then putStrLn "Invalid argument" >> exitWith (ExitFailure 84)
+    else return ()
 
 
 retrieveColors :: Int -> Int -> [String] -> Maybe Pixel
