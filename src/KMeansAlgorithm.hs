@@ -101,7 +101,6 @@ algorithm conf@(Config _ c _) pxArr clArr =
 kMeansAlgorithm :: Config -> [Pixel] -> IO ()
 kMeansAlgorithm conf pixelArray = do
     clusterArray <- generateClusterArray (colorsNumber conf) colorsLimits
-    print clusterArray
     printClusterArray (algorithm conf pixelArray clusterArray)
     where
         colorsLimits = randomLimits pixelArray
