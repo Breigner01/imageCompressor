@@ -37,6 +37,31 @@ pixelToCluster px@(Pixel pt c1) i is d (cl@(Cluster c2 pxArr):clArr) =
     where
         nd = computeDistance c1 c2
 
+emplacePixel :: Pixel -> Int -> [Cluster] -> [Cluster]
+emplacePixel px 0 (cl@(Cluster _ pxArr):clArr) =
+    cl {pixelArray = px : pxArr} : clArr
+emplacePixel px i (cl:clArr) = cl : emplacePixel px (i - 1) clArr
+
+colorSum :: [Pixel] -> Color -> Color
+colorSum [] c = c
+colorSum (px@(Pixel _ c@(Color r1 g1 b1)):pxArr) cs@(Color r2 g2 b2) =
+    colorSum pxArr cs {r = r1 + r2, g = g1 + g2, b = b1 + b2}
+
+computeCentroid :: [Pixel] -> Color
+computeCentroid pxArr =
+    Color {r = r / len, g = g / len, b = b / len}
+    where
+        c@(Color r g b) = colorSum pxArr Color {r = 0, g = 0, b = 0}
+        len = int2Float (length pxArr)
+
+computeAllCentroids :: [Cluster] -> [Cluster]
+computeAllCentroids [] = []
+computeAllCentroids (cl@(Cluster _ px):clArr) =
+    cl {centroid = computeCentroid px} : computeAllCentroids clArr
+
+algorithm :: [Cluster] -> [Pixel] -> [Cluster]
+algorithm clArr (px:pxArr) = undefined
+
 kMeansAlgorithm :: Config -> [Pixel] -> IO ()
 kMeansAlgorithm input pixelArray = do
     clusterArray <- generateClusterArray (colorsNumber input)
