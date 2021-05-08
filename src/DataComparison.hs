@@ -14,9 +14,7 @@ pixelArrayEq :: [Pixel] -> [Pixel] -> Bool
 pixelArrayEq [] [] = True
 pixelArrayEq _ [] = False
 pixelArrayEq [] _ = False
-pixelArrayEq (px1:pa1) (px2:pa2) =  if pixelEq px1 px2
-                                    then pixelArrayEq pa1 pa2
-                                    else False
+pixelArrayEq (px1:pa1) (px2:pa2) =  pixelEq px1 px2 && pixelArrayEq pa1 pa2
 
 clusterEq :: Cluster -> Cluster -> Bool
 clusterEq   cl1@(Cluster ce1@(Color r1 g1 b1) p1)
@@ -28,6 +26,4 @@ clusterArrayEq :: [Cluster] -> [Cluster] -> Bool
 clusterArrayEq [] [] = True
 clusterArrayEq _ [] = False
 clusterArrayEq [] _ = False
-clusterArrayEq (c1:ca1) (c2:ca2) =  if clusterEq c1 c2
-                                    then clusterArrayEq ca1 ca2
-                                    else False
+clusterArrayEq (c1:ca1) (c2:ca2) =  clusterEq c1 c2 && clusterArrayEq ca1 ca2

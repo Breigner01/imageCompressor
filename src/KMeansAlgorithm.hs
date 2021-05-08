@@ -21,9 +21,7 @@ generateClusterArray nb (cMin@(Color rMin gMin bMin),
         pixelArray = []} : clusterArray)
 
 newClusterArray :: [Cluster] -> [Cluster]
-newClusterArray [] = []
-newClusterArray (cluster:clusterArray) =
-    newCluster cluster : newClusterArray clusterArray
+newClusterArray = map newCluster
 
 newCluster :: Cluster -> Cluster
 newCluster cluster@(Cluster c@(Color r g b) _) =
