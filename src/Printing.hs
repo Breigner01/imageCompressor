@@ -5,10 +5,7 @@ module Printing
 import DataTypes
 
 printClusterArray :: [Cluster] -> IO ()
-printClusterArray [] = return ()
-printClusterArray (cl:clArr) =
-    printCluster cl >>
-    printClusterArray clArr
+printClusterArray = foldr ((>>) . printCluster) (return ())
 
 printCluster :: Cluster -> IO ()
 printCluster cl@(Cluster c pxArr) =
@@ -19,14 +16,11 @@ printCluster cl@(Cluster c pxArr) =
 
 printColor :: Color -> IO ()
 printColor c@(Color r g b) =
-    putStrLn ('(' : (show (round r)) ++ "," ++ (show (round g)) ++
-        "," ++ (show (round b)) ++ ")")
+    putStrLn ('(' : show (round r) ++ "," ++ show (round g) ++
+        "," ++ show (round b) ++ ")")
 
 printPixelArray :: [Pixel] -> IO ()
-printPixelArray [] = return ()
-printPixelArray (px:pxArr) =
-    printPixel px >>
-    printPixelArray pxArr
+printPixelArray = foldr ((>>) . printPixel) (return ())
 
 printPixel :: Pixel -> IO ()
 printPixel px@(Pixel p c) =
@@ -35,4 +29,4 @@ printPixel px@(Pixel p c) =
 
 printPoint :: Point -> IO ()
 printPoint p@(Point x y) =
-    putStr ('(' : (show x) ++ "," ++ (show y) ++ ") ")
+    putStr ('(' : show x ++ "," ++ show y ++ ") ")
