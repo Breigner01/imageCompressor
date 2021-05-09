@@ -29,7 +29,8 @@ newCluster cluster@(Cluster c@(Color r g b) _) =
 
 computeDistance :: Color -> Color -> Float
 computeDistance c1@(Color r1 g1 b1) c2@(Color r2 g2 b2) =
-    sqrt ((r1 - r2) * (r1 - r2) + (g1 - g2) * (g1 - g2) + (b1 - b2) * (b1 - b2))
+    sqrt ((r1 - r2) * (r1 - r2) + (g1 - g2) * (g1 - g2) +
+        (b1 - b2) * (b1 - b2))
 
 pixelToCluster :: Pixel -> Int -> Int -> Float -> [Cluster] -> Int
 pixelToCluster _ _ is _ [] = is

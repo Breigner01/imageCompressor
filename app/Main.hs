@@ -21,6 +21,6 @@ main = do
             checkArgs conf
             content <- readFile (file conf)
             case parseFile (lines content) of
-                Just pxArr -> kMeansAlgorithm conf pxArr >> exitWith ExitSuccess
+                Just arr -> kMeansAlgorithm conf arr >> exitWith ExitSuccess
                 Nothing -> putStrLn "Invalid File" >> exitWith (ExitFailure 84)
         Nothing -> help >> exitWith (ExitFailure 84)
